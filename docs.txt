@@ -1,0 +1,72 @@
+App
+- Utilities (libraries (php mailer), static function helper, auth)
+- models
+- views
+- controllers
+- Services 
+Config   (done)
+- Routes
+- Application (version, is cash, 
+- Databases
+- Email
+- directories
+Core
+- router
+- Cash folder
+- Log Logger (interface LoggerInterface {public function write($message); public function read($messageCount);}, txtfilelogger down dwon)
+- Loader (txtloader, )
+- Model.php 
+- Controller.php (relations logger, view, services, model)
+- View.php (all http response in const var BAD_REQUEST_INVALID_
+- Services.php (connection, function insert, getByid($id);getById(int $id);getAll();getBy(array $conditions)
+- Database folder MySQLiConnection (new logging_mysqli(...);)
+- MySQLiCounter 
+- Http Request
+- Response
+Bootstrap
+- autoload
+- Application (request, cash, router and auth, view return response)
+Storage
+- app/puplic/logos, 
+- Logs
+- Cash
+
+Test
+
+
+class logging_mysqli extends mysqli {
+    public $count = 0;
+    public function query($sql) {
+        $this->count++;
+        return parent::query($sql);
+    }
+}
+
+$DB_CONNECTION =
+
+
+
+
+class FileLogger implements LoggerInterface { protected $file;
+public function __construct($file) { $this->file = new \SplFileObject($file);
+}
+public function write($message) { $this->file->fwrite($message);
+}
+public function read($messageCount) {
+    $lines = 0;
+    $contents = [];
+while (!$this->file->eof()
+&& $lines < $messageCount) {
+      $contents[] = $this->file->fgets();
+      $lines++;
+}
+return $contents; }
+}
+
+
+
+class User extends AbstractModel { public $id;
+public $alias;
+public $fullName;
+public $email; }
+This is a
