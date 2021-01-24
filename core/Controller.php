@@ -2,11 +2,14 @@
 
 namespace Core;
 
-abstract class Controller
+class Controller
 {
-	protected $view;
+	protected $request;
+    protected $response;
+
 	function __construct()
 	{
-		$this->view = new View();
+		$this->request = new \Core\HTTP\Request();
+        $this->response = new \Core\HTTP\Response();
 	}
 }
