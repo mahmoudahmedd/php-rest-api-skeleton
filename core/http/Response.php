@@ -18,4 +18,20 @@ class Response
     	$this->statusCode($_code);
     	echo json_encode($_data, JSON_PRETTY_PRINT);
     }
+
+    public function renderFail(int $_code, string $_message = "please read the API documentation.")
+    {
+        $data = array("status" => "fail", "message" => $_message);
+        $this->render($data, $_code);
+        exit();
+    }
+
+    public function renderOk(array $_data)
+    {
+        $data = array("status" => "ok", "data" => $_data);
+        $this->render($data, 200);
+        exit();
+    }
+
+
 }

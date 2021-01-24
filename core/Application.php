@@ -18,8 +18,6 @@ class Application
      */
     public static function run() 
     {
-        
-
         if($GLOBALS["app"]["debug"])
         {
             // debug mode
@@ -32,18 +30,27 @@ class Application
             error_reporting(0);
         }
 
+        
+
         $request = new \Core\HTTP\Request();
         $response = new \Core\HTTP\Response();
         $router = new \Core\Router("/", $request, $response);
-     
+
+        // Check connection 
+        // if($db->connect_error)
+        // {
+        //     die("Connection failed: " . $db->connect_error); 
+        // }
         
-        $router->get("/users/([0-9]+)", ['controller' => 'UserController', 'action' => 'get'])
-               ->middleware(['admin']);
+        $router->post("/auth", ['controller' => 'UserController', 'action' => 'auth']);
 
-        $router->get("/posts/([0-9]+)", ['controller' => 'PostController', 'action' => 'get'])
-               ->middleware(['admin']);
+        $router->get("/users/([0-9]+)", ['controller' => 'UserController', 'action' => 'get']);
+               
 
-        $router->get("/products/([0-9]+)", ['controller' => 'ProductController', 'action' => 'get']);
+        $router->get("/posts/([0-9]+)", ['controller' => 'UserController', 'action' => 'get'])
+               ->middleware(["admin", "user"]);
+
+        $router->get("/products/([0-9]+)", ['controller' => 'UserController', 'action' => 'get']);
         $router->resolve();
 
 
@@ -60,6 +67,8 @@ class Application
         //$router->get("/posts/([0-9]+)", ['controller' => 'UserController', 'action' => 'get']);
         //$router->get("/posts/([0-9]+)", function($id){echo $id;});
         //$router->resolve();
+
+        //$db->close();
 
     }
 }
