@@ -13,6 +13,8 @@ define('APP_START', microtime(true));
 // Define root path
 define('ROOT', realpath(__DIR__));
 
+define('_DB_PREFIX_',  '');
+
 // Define directory separator
 define('DS', DIRECTORY_SEPARATOR); 
 
