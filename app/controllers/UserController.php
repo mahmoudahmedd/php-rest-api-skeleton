@@ -11,18 +11,25 @@ class UserController extends \Core\Controller
 		$sql = new \Core\Database\Mysqli\MySQLiQuery();
 		// Build SELECT
 		$sql->select('users.*');
+		$sql->select('user_types.*');
 		// Build FROM
 		$sql->from('users', 'users');
 
-		//$sql->leftJoin('users');
-		echo \Core\Database\Mysqli\MySQLiConnection::bqSQL($sql);
-		//$products = Db::getInstance()->executeS($sql);
+
+		$sql->innerJoin('user_types', 'user_types', 'users.user_type = user_types.id');
+		$sql->innerJoin('customers', 'customers', 'users.id = customers.user_id');
+
+		$sql->where('users.is_banned = 0 AND users.id = ' . $this->db::escape($_id));
+		
 		echo $sql;
+		
+		//$products = Db::getInstance()->executeS($sql);
+		
 		 
-		//$db = $this->db->execute($sql);
+		$res = $this->db->execute($sql);
 		//$res = $this->db->execute($sql);
 
-		//print_r($res);
+		print_r($res);
 
 		$data = array("status" => "ok", "id" => (int) $_id);
 		
