@@ -3,8 +3,8 @@
  *  @file    index.php
  *  @date    05/10/2020
  *  @version 1.0.0
+ *  @PHP_Version 7.4.14
  */
-
 
 // For performance measurements, returns the current Unix timestamp with microseconds
 // set to TRUE, microtime() will return a float instead of a string.
@@ -32,7 +32,7 @@ Application::run();
 // APP_START
 define('APP_END', microtime(true));
 
-echo "<br>" . (APP_END - APP_START);
+//echo "<br>" . (APP_END - APP_START);
 
 /*
 if($configs["debug"]) 

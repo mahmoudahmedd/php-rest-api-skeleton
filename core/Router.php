@@ -145,11 +145,12 @@ class Router
                     {
                         if(! \Core\Authorizer::isAuthorized($this->request, $this->roles[$requestMethod][$urll]))
                         {
-                            $this->response->renderFail(401, "not authorized.");
+                            $this->response->renderFail(401, "Not authorized.");
                         }
                     }
 
                     $controller = $this->getNamespace() . $callback["controller"];
+                    
                     call_user_func_array(array(new $controller, $callback["action"]), $matches);
                 }
                 else
@@ -188,7 +189,7 @@ class Router
      */
     protected function getNamespace()
     {
-        $namespace = "\\App\\Controllers\\";
+        $namespace = "\\Resources\\";
         return $namespace;
     }
 

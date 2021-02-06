@@ -10,13 +10,13 @@ class Application
     // Application constructor
     private function __construct()
     {}
-    
+
     /**
-     * Run the application
+     * init
      *
      * @return void
      */
-    public static function run() 
+    private static function init()
     {
         if($GLOBALS["app"]["debug"])
         {
@@ -29,46 +29,36 @@ class Application
         {
             error_reporting(0);
         }
-
-        
+    }
+    
+    /**
+     * Run the application
+     *
+     * @return void
+     */
+    public static function run() 
+    {
+        self::init();
 
         $request = new \Core\HTTP\Request();
         $response = new \Core\HTTP\Response();
         $router = new \Core\Router("/", $request, $response);
 
-        // Check connection 
-        // if($db->connect_error)
-        // {
-        //     die("Connection failed: " . $db->connect_error); 
-        // }
-        
-        $router->post("/auth", ['controller' => 'UserController', 'action' => 'auth']);
+        // ------------------------------------------------------------
 
-        $router->get("/users/([0-9]+)", ['controller' => 'UserController', 'action' => 'get']);
-               
+        // auth
+        $router->post("/auth/me", ['controller' => 'Auth\\AuthController', 'action' => 'authMe']);
+        $router->post("/auth/register", ['controller' => 'Auth\\AuthController', 'action' => 'register']);
 
-        $router->get("/posts/([0-9]+)", ['controller' => 'UserController', 'action' => 'get'])
-               ->middleware(["admin", "user"]);
+        // users
+        $router->get("/users/([0-9]+)", ['controller' => 'User\\UserController', 'action' => 'show']);
+        $router->get("/users", ['controller' => 'User\\UserController', 'action' => 'index'])
+               ->middleware(["admin", "customer"]);
 
-        $router->get("/products/([0-9]+)", ['controller' => 'UserController', 'action' => 'get']);
+        // ------------------------------------------------------------
+        $router->get("/search", ['controller' => 'Search\\SearchController', 'action' => 'index']);
+         
+        // Resolve
         $router->resolve();
-
-
-        // database
-        //$db = \Core\Database\Mysqli\MySQLiConnection::getInstance();
-        //$result = $db->query("SELECT * FROM users");
-        //print_r($result);
-        //echo "<pre>";
-        //var_dump($db->count);
-        //echo "</pre>";
-
-        // router
-        //$router->get("/users/([0-9]+)", ['controller' => 'UserController', 'action' => 'get']);
-        //$router->get("/posts/([0-9]+)", ['controller' => 'UserController', 'action' => 'get']);
-        //$router->get("/posts/([0-9]+)", function($id){echo $id;});
-        //$router->resolve();
-
-        //$db->close();
-
     }
 }

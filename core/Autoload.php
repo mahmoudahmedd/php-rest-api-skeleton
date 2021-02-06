@@ -24,7 +24,7 @@ class Autoloader
         }
 
         // Include all PHP files from the config dir
-        $libsDir = ROOT . DS . "app" . DS . "utilities" . DS . "libs" . DS . "jwt" . DS;
+        $libsDir = ROOT . DS . "core" . DS . "utilities" . DS . "libs" . DS . "jwt" . DS;
         
         foreach(glob($libsDir . "*.php") as $file)
         {

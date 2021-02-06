@@ -4,6 +4,14 @@ namespace Core\HTTP;
 
 class Response
 {
+    const HTTP_BAD_REQUEST = 400;
+    const HTTP_UNAUTHORIZED = 401;
+    const HTTP_NOT_FOUND = 404;
+    
+    const HTTP_OK = 200;
+    const HTTP_CREATED = 201;
+
+
     public function statusCode(int $_code)
     {
         http_response_code($_code);
@@ -19,18 +27,17 @@ class Response
     	echo json_encode($_data, JSON_PRETTY_PRINT);
     }
 
-    public function renderFail(int $_code, string $_message = "please read the API documentation.")
+    public function renderFail(int $_code, string $_message = "Please read the API documentation.")
     {
-        $data = array("status" => "fail", "message" => $_message);
+        $data = array("status" => "Fail", "message" => $_message);
         $this->render($data, $_code);
         exit();
     }
 
-    public function renderOk(array $_data)
+    public function renderOk(int $_statusCode, $_data)
     {
-        $data = array("status" => "ok", "data" => $_data);
-        $this->render($data, 200);
-        exit();
+        $data = array("status" => "Ok", "data" => $_data);
+        $this->render($data, $_statusCode);
     }
 
 

@@ -15,22 +15,16 @@ class Authorizer
      */
     public static function isAuthorized($_request, $_roles)
     {
-    	$headers = apache_request_headers();
-    	
-    	if(!isset($headers['Authorization']))
-    		return false;
-
-    	$arr = explode(" ", $headers['Authorization']);
-    	if(!isset($arr[1]))
-    		return false;
-
-    	$jwt = $arr[1];
-    	
 		try
 		{
-			$decoded = JWT::decode($jwt, $GLOBALS["app"]["key"], array($GLOBALS["app"]["cipher"]));
-            print_r($decoded);
-			if(in_array($decoded->role, $_roles))
+            $jwt = Authorizer::getJWT();
+           
+            if(!isset($jwt))
+                return false;
+
+			$payload = Authorizer::getPayload($jwt);
+            
+			if(in_array($payload->role, $_roles))
 			{
 			    return true;
 			}
@@ -43,6 +37,41 @@ class Authorizer
 		{
 			return false;
 		}
+    }
+
+    /**
+     * retrun PAYLOAD
+     * @param  string  $_jwt
+     * @return string
+     */
+    public static function getPayload($_jwt)
+    {
+        $payload = JWT::decode($_jwt, $GLOBALS["app"]["JWT_secret_key"], array($GLOBALS["app"]["JWT_cipher"]));
+        return $payload;
+    }
+
+    /**
+     * retrun JWT
+     *
+     * @return bool | NULL
+     */
+    public static function getJWT()
+    {
+        $headers = apache_request_headers();
+        
+        if(!isset($headers['Authorization']))
+            return NULL;
+
+        $arr = explode(" ", $headers['Authorization']);
+
+        if(!isset($arr[0]) || $arr[0] != "Bearer")
+            return NULL;
+
+        if(!isset($arr[1]))
+            return NULL;
+
+        // JWT
+        return $arr[1];
     }
 
 }

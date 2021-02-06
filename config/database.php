@@ -20,7 +20,7 @@ return
         [
             "host"     => "localhost",
             "username" => "root",
-            "password" => "123456",
+            "password" => "",
             "db_name"  => "graduation_project_database",
         ],
     ],

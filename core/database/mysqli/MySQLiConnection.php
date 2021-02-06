@@ -22,6 +22,7 @@ class MySQLiConnection extends \MySQLi
             $database = $GLOBALS["database"]["connections"]["mysql"]["db_name"];
 
             self::$instance = new self($host, $user, $password, $database);
+            self::$instance->options(MYSQLI_OPT_INT_AND_FLOAT_NATIVE, 1);
         }
 
         return self::$instance;
@@ -34,13 +35,14 @@ class MySQLiConnection extends \MySQLi
 
     }
 
-    public static function pSQL($_string, $_htmlOK = false)
+    public static function escape($_string)
     {
-        return self::$instance->escape($_string, $_htmlOK);
+        
+        return self::$instance->real_escape_string($_string);
     }
 
     public static function bqSQL($_string)
     {
-        return str_replace('`', '\`', self::pSQL($_string));
+        return str_replace('`', '\`', self::escape($_string));
     }
 }

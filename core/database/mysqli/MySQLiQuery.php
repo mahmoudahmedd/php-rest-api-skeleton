@@ -29,6 +29,7 @@ class MySQLiQuery
     protected $query = array(
         'type'   => 'SELECT',
         'select' => array(),
+        'insert' => array(),
         'from'   => array(),
         'join'   => array(),
         'where'  => array(),
@@ -65,12 +66,28 @@ class MySQLiQuery
      */
     public function select($fields)
     {
-        if (!empty($fields)) {
+        if (!empty($fields))
+        {
             $this->query['select'][] = $fields;
         }
         // echo "<pre>";
         // print_r($this->query);
         // echo "</pre>";
+        return $this;
+    }
+
+    /**
+     * Sets table for INSERT clause
+     *
+     * @param string      $table Table name
+     * @return DbQuery
+     */
+    public function insert($table)
+    {
+        if(!empty($table))
+        {
+            $this->query['insert'][] = $table;
+        }
         return $this;
     }
 
@@ -84,7 +101,8 @@ class MySQLiQuery
      */
     public function from($table, $alias = null)
     {
-        if (!empty($table)) {
+        if (!empty($table))
+        {
             $this->query['from'][] = '`'._DB_PREFIX_.$table.'`'.($alias ? ' '.$alias : '');
         }
 
@@ -101,7 +119,8 @@ class MySQLiQuery
      */
     public function join($join)
     {
-        if (!empty($join)) {
+        if (!empty($join))
+        {
             $this->query['join'][] = $join;
         }
 
@@ -119,7 +138,7 @@ class MySQLiQuery
      */
     public function leftJoin($table, $alias = null, $on = null)
     {
-        return $this->join('LEFT JOIN `'._DB_PREFIX_.\Core\Database\Mysqli\MySQLiConnection::bqSQL($table).'`'.($alias ? ' `'.\Core\Database\Mysqli\MySQLiConnection::pSQL($alias).'`' : '').($on ? ' ON '.$on : ''));
+        return $this->join('LEFT JOIN `'._DB_PREFIX_.\Core\Database\Mysqli\MySQLiConnection::bqSQL($table).'`'.($alias ? ' `'.\Core\Database\Mysqli\MySQLiConnection::escape($alias).'`' : '').($on ? ' ON '.$on : ''));
     }
 
     /**
@@ -134,7 +153,7 @@ class MySQLiQuery
      */
     public function innerJoin($table, $alias = null, $on = null)
     {
-        return $this->join('INNER JOIN `'._DB_PREFIX_.bqSQL($table).'`'.($alias ? ' `'.pSQL($alias).'`' : '').($on ? ' ON '.$on : ''));
+        return $this->join('INNER JOIN `'._DB_PREFIX_.\Core\Database\Mysqli\MySQLiConnection::bqSQL($table).'`'.($alias ? ' `'.\Core\Database\Mysqli\MySQLiConnection::escape($alias).'`' : '').($on ? ' ON '.$on : ''));
     }
 
     /**
@@ -148,7 +167,7 @@ class MySQLiQuery
      */
     public function leftOuterJoin($table, $alias = null, $on = null)
     {
-        return $this->join('LEFT OUTER JOIN `'._DB_PREFIX_.bqSQL($table).'`'.($alias ? ' `'.pSQL($alias).'`' : '').($on ? ' ON '.$on : ''));
+        return $this->join('LEFT OUTER JOIN `'._DB_PREFIX_.\Core\Database\Mysqli\MySQLiConnection::bqSQL($table).'`'.($alias ? ' `'.\Core\Database\Mysqli\MySQLiConnection::escape($alias).'`' : '').($on ? ' ON '.$on : ''));
     }
 
     /**
@@ -161,7 +180,7 @@ class MySQLiQuery
      */
     public function naturalJoin($table, $alias = null)
     {
-        return $this->join('NATURAL JOIN `'._DB_PREFIX_.bqSQL($table).'`'.($alias ? ' `'.pSQL($alias).'`' : ''));
+        return $this->join('NATURAL JOIN `'._DB_PREFIX_.\Core\Database\Mysqli\MySQLiConnection::bqSQL($table).'`'.($alias ? ' `'.\Core\Database\Mysqli\MySQLiConnection::escape($alias).'`' : ''));
     }
 
     /**
@@ -175,7 +194,7 @@ class MySQLiQuery
      */
     public function rightJoin($table, $alias = null, $on = null)
     {
-        return $this->join('RIGHT JOIN `'._DB_PREFIX_.bqSQL($table).'`'.($alias ? ' `'.pSQL($alias).'`' : '').($on ? ' ON '.$on : ''));
+        return $this->join('RIGHT JOIN `'._DB_PREFIX_.\Core\Database\Mysqli\MySQLiConnection::bqSQL($table).'`'.($alias ? ' `'.\Core\Database\Mysqli\MySQLiConnection::escape($alias).'`' : '').($on ? ' ON '.$on : ''));
     }
 
     /**
@@ -187,7 +206,8 @@ class MySQLiQuery
      */
     public function where($restriction)
     {
-        if (!empty($restriction)) {
+        if (!empty($restriction))
+        {
             $this->query['where'][] = $restriction;
         }
 
@@ -203,7 +223,8 @@ class MySQLiQuery
      */
     public function having($restriction)
     {
-        if (!empty($restriction)) {
+        if (!empty($restriction))
+        {
             $this->query['having'][] = $restriction;
         }
 
@@ -219,7 +240,8 @@ class MySQLiQuery
      */
     public function orderBy($fields)
     {
-        if (!empty($fields)) {
+        if (!empty($fields))
+        {
             $this->query['order'][] = $fields;
         }
 
@@ -235,7 +257,8 @@ class MySQLiQuery
      */
     public function groupBy($fields)
     {
-        if (!empty($fields)) {
+        if (!empty($fields))
+        {
             $this->query['group'][] = $fields;
         }
 
@@ -253,7 +276,8 @@ class MySQLiQuery
     public function limit($limit, $offset = 0)
     {
         $offset = (int)$offset;
-        if ($offset < 0) {
+        if ($offset < 0)
+        {
             $offset = 0;
         }
 
@@ -273,39 +297,49 @@ class MySQLiQuery
      */
     public function build()
     {
-        if ($this->query['type'] == 'SELECT') {
+        if ($this->query['type'] == 'SELECT')
+        {
             $sql = 'SELECT '.((($this->query['select'])) ? implode(",\n", $this->query['select']) : '*')."\n";
-        } else {
+        }
+        else
+        {
             $sql = $this->query['type'].' ';
         }
 
-        if (!$this->query['from']) {
-            throw new \Exception('Table name not set in DbQuery object. Cannot build a valid SQL query.');
+        if (!$this->query['from'])
+        {
+            throw new \Exception('Table name not set in MySQLiQuery object. Cannot build a valid SQL query.');
         }
 
         $sql .= 'FROM '.implode(', ', $this->query['from'])."\n";
 
-        if ($this->query['join']) {
+        if ($this->query['join'])
+        {
             $sql .= implode("\n", $this->query['join'])."\n";
         }
 
-        if ($this->query['where']) {
+        if ($this->query['where'])
+        {
             $sql .= 'WHERE ('.implode(') AND (', $this->query['where']).")\n";
         }
 
-        if ($this->query['group']) {
+        if ($this->query['group'])
+        {
             $sql .= 'GROUP BY '.implode(', ', $this->query['group'])."\n";
         }
 
-        if ($this->query['having']) {
+        if ($this->query['having'])
+        {
             $sql .= 'HAVING ('.implode(') AND (', $this->query['having']).")\n";
         }
 
-        if ($this->query['order']) {
+        if ($this->query['order'])
+        {
             $sql .= 'ORDER BY '.implode(', ', $this->query['order'])."\n";
         }
 
-        if ($this->query['limit']['limit']) {
+        if ($this->query['limit']['limit'])
+        {
             $limit = $this->query['limit'];
             $sql .= 'LIMIT '.($limit['offset'] ? $limit['offset'].', ' : '').$limit['limit'];
         }
